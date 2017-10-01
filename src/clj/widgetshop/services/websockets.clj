@@ -24,8 +24,8 @@
     (?reply-fn {:umatched-event-as-echoed-from-from-server event})))
 
 (defmethod -event-msg-handler :example/send-message
-  [{:as ev-msg}]
-  (prn "received message" ev-msg))
+  [{:as ev-msg :keys [?data]}]
+  (prn "Received message" ?data))
 
 (defmethod -event-msg-handler :example/send-and-receive-response
   [{:as ev-msg :keys [?reply-fn]}]
@@ -52,6 +52,8 @@
                           (ajax-get-or-ws-handshake-fn req))
                         (POST "/chsk" req 
                           (ajax-post-fn                req)))))))
-  (stop [{stop ::routes :as this}]
+  (stop [{stop             ::routes
+          stop-chsk-routes ::ws-routes :as this}]
     (stop)
+    (stop-chsk-routes)
     (dissoc this ::routes ::ws-routes)))

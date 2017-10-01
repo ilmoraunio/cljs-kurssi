@@ -8,7 +8,7 @@
             [widgetshop.app.state :refer [app]]
             [widgetshop.app.products :as products]
             [widgetshop.server :refer [chsk-send!]]
-            [taoensso.sente  :as sente  :refer (cb-success?)]))
+            [taoensso.sente :as sente :refer (cb-success?)]))
 
 
 
@@ -74,7 +74,7 @@
                         :on-click     #(println "clicked")}]
      [ui/raised-button {:label        "Send message"
                         :icon         (ic/communication-call-made)
-                        :on-click     #(chsk-send! [:example/send-message])}]
+                        :on-click     #(chsk-send! [:example/send-message {:foo :bar}])}]
      [ui/raised-button {:label        "Send message & receive response"
                         :icon         (ic/communication-import-export)
                         :on-click     #(chsk-send! [:example/send-and-receive-response]
