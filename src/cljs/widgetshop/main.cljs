@@ -6,7 +6,8 @@
             [cljs-react-material-ui.reagent :as ui]
             [cljs-react-material-ui.icons :as ic]
             [widgetshop.app.state :refer [app]]
-            [widgetshop.app.products :as products]))
+            [widgetshop.app.products :as products]
+            [widgetshop.server :refer [chsk-send!]]))
 
 
 
@@ -69,7 +70,19 @@
 
      [ui/raised-button {:label        "Click me"
                         :icon         (ic/social-group)
-                        :on-click     #(println "clicked")}]]]])
+                        :on-click     #(println "clicked")}]
+     [ui/raised-button {:label        "Send message"
+                        :icon         (ic/communication-call-made)
+                        :on-click     #(chsk-send! [:example/send-message])}]
+     [ui/raised-button {:label        "Send message & receive response"
+                        :icon         (ic/communication-import-export)
+                        :on-click     #(chsk-send! [:example/send-and-receive-response]
+                                                   5000 ;; timeout value
+                                                   (fn [callback-reply]
+                                                    (println "Callback reply" callback-reply)))}]
+     [ui/raised-button {:label        "Broadcast"
+                        :icon         (ic/communication-call-split)
+                        :on-click     #(chsk-send! [:example/broadcast-message])}]]]])
 
 
 (defn main-component []
