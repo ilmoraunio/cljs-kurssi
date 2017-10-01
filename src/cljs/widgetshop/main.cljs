@@ -7,7 +7,8 @@
             [cljs-react-material-ui.icons :as ic]
             [widgetshop.app.state :refer [app]]
             [widgetshop.app.products :as products]
-            [widgetshop.server :refer [chsk-send!]]))
+            [widgetshop.server :refer [chsk-send!]]
+            [taoensso.sente  :as sente  :refer (cb-success?)]))
 
 
 
@@ -79,7 +80,8 @@
                         :on-click     #(chsk-send! [:example/send-and-receive-response]
                                                    5000 ;; timeout value
                                                    (fn [callback-reply]
-                                                    (println "Callback reply" callback-reply)))}]
+                                                    (when cb-success?
+                                                      (println "Callback reply" callback-reply))))}]
      [ui/raised-button {:label        "Broadcast"
                         :icon         (ic/communication-call-split)
                         :on-click     #(chsk-send! [:example/broadcast-message])}]]]])

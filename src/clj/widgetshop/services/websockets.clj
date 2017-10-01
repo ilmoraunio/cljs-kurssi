@@ -32,7 +32,7 @@
   (?reply-fn {:payload #{1 2 3}}))
 
 (defmethod -event-msg-handler :example/broadcast-message
-  [{:as ev-msg :keys [ring-req send-fn]}]
+  [{:as ev-msg :keys [send-fn]}]
   (send-fn :sente/all-users-without-uid [:example/broadcast-message]))
 
 (defrecord WebsocketsService []
