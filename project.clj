@@ -40,6 +40,12 @@
                  ;; Something pulls an old guava which prevents closure compiler
                  ;; override here
                  [com.google.guava/guava "21.0"]
+
+                 ;; For middleware
+                 [ring "1.6.2"]
+
+                 ;; Websockets
+                 [com.taoensso/sente "1.11.0"]
                  ]
 
   :plugins [[lein-cljsbuild "1.1.5"]

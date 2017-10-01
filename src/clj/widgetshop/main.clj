@@ -5,7 +5,8 @@
             [widgetshop.components.http :as http]
             [widgetshop.components.db :as db]
 
-            [widgetshop.services.products :as products]))
+            [widgetshop.services.products :as products]
+            [widgetshop.services.websockets :as websockets]))
 
 (def system nil)
 
@@ -14,7 +15,8 @@
    :db (db/create-embedded-database)
    :http (http/create-http-server (get-in settings [:http :port]))
 
-   :products (component/using (products/->ProductsService) [:db :http])))
+   :products (component/using (products/->ProductsService) [:db :http])
+   :websockets (component/using (websockets/->WebsocketsService) [:http])))
 
 
 (defn -main [& args]

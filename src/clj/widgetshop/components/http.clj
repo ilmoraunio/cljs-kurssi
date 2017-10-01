@@ -2,7 +2,9 @@
   (:require [org.httpkit.server :as server]
             [com.stuartsierra.component :as component]
             [compojure.route :refer [resources]]
-            [cognitect.transit :as transit]))
+            [cognitect.transit :as transit]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.keyword-params :refer [wrap-keyword-params]]))
 
 (defn- serve-request [handlers req]
   ((apply some-fn handlers) req))
@@ -12,8 +14,10 @@
   (start [this]
     (let [resource-handler (resources "/")]
       (assoc this ::stop (server/run-server
-                          (fn [req]
-                            (serve-request (conj @handlers resource-handler) req))
+                          (-> (fn [req]
+                                (serve-request (conj @handlers resource-handler) req))
+                              wrap-keyword-params
+                              wrap-params)
                           http-kit-options))))
 
   (stop [{stop ::stop :as this}]
