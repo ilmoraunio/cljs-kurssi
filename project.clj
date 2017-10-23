@@ -40,13 +40,15 @@
                  ;; Something pulls an old guava which prevents closure compiler
                  ;; override here
                  [com.google.guava/guava "21.0"]
+
+                 ;; figwheel in ide
+                 [figwheel-sidecar "0.5.0"]
                  ]
 
-  :plugins [[lein-cljsbuild "1.1.5"]
-            [lein-figwheel "0.5.10"]]
+  :plugins [[lein-cljsbuild "1.1.5"]]
 
   ;; Sources for backend: clj and cljc (shared with frontend)
-  :source-paths ["src/clj" "src/cljc"]
+  :source-paths ["src/clj" "src/cljc" "script"]
 
   ;; Configure ClojureScript builds
   :cljsbuild {:builds
