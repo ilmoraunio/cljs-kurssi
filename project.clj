@@ -41,6 +41,8 @@
                  ;; override here
                  [com.google.guava/guava "21.0"]
 
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+
                  ;; figwheel in ide
                  [figwheel-sidecar "0.5.0"]
                  ]
