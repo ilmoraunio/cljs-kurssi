@@ -36,11 +36,11 @@
          [ui/table-row-column description]
          [ui/table-row-column price]
          [ui/table-row-column
-          [ui/flat-button {:primary true :on-click #(swap! state/app
-                                                           (fn [app product]
-                                                             (update app :cart conj product))
-                                                           product)}
+          [ui/flat-button {:primary true :on-click #(state/update-state! add-to-cart product)}
            "Add to cart"]]])]]))
+
+(defn- add-to-cart [app product]
+  (update app :cart conj product))
 
 (defn widgetshop [app]
   [ui/mui-theme-provider
