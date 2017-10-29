@@ -42,6 +42,14 @@
 (defn- add-to-cart [app product]
   (update app :cart conj product))
 
+(defn product-view [{:keys [id name description price] :as product}]
+  (when product
+    [ui/card
+     {:initially-expanded true}
+     [ui/card-header {:title name
+                      :subtitle description}]
+     [ui/card-text (str price " €")]]))
+
 (defn widgetshop [app]
   [ui/mui-theme-provider
    {:mui-theme (get-mui-theme
@@ -73,12 +81,7 @@
                         :icon         (ic/social-group)
                         :on-click     #(println "clicked")}]]
 
-    [ui/card
-     {:initially-expanded true}
-     [ui/card-header {:title "product name here"
-                      :subtitle "product description here"}]
-     [ui/card-text "500 €"]]]])
-
+    [product-view {:id 1 :name "ProductFoo" :price 1000 :description "Description of ProductFoo"}]]])
 
 (defn main-component []
   [widgetshop @app])
