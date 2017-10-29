@@ -6,7 +6,8 @@
             [cljs-react-material-ui.reagent :as ui]
             [cljs-react-material-ui.icons :as ic]
             [widgetshop.app.state :refer [app]]
-            [widgetshop.app.products :as products]))
+            [widgetshop.app.products :as products]
+            [widgetshop.app.state :as state]))
 
 
 
@@ -28,14 +29,17 @@
        [ui/table-header-column "Price (€)"]
        [ui/table-header-column "Add to cart"]]]
      [ui/table-body {:display-row-checkbox false}
-      (for [{:keys [id name description price]} products]
+      (for [{:keys [id name description price] :as product} products]
         ^{:key id}
         [ui/table-row
          [ui/table-row-column name]
          [ui/table-row-column description]
          [ui/table-row-column price]
          [ui/table-row-column
-          [ui/flat-button {:primary true :on-click #(js/alert "add to cart!")}
+          [ui/flat-button {:primary true :on-click #(swap! state/app
+                                                           (fn [app product]
+                                                             (update app :cart conj product))
+                                                           product)}
            "Add to cart"]]])]]))
 
 (defn widgetshop [app]
