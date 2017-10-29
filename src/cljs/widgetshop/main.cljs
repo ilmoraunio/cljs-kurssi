@@ -71,7 +71,13 @@
 
      [ui/raised-button {:label        "Click me"
                         :icon         (ic/social-group)
-                        :on-click     #(println "clicked")}]]]])
+                        :on-click     #(println "clicked")}]]
+
+    [ui/card
+     {:initially-expanded true}
+     [ui/card-header {:title "product name here"
+                      :subtitle "product description here"}]
+     [ui/card-text "500 €"]]]])
 
 
 (defn main-component []
