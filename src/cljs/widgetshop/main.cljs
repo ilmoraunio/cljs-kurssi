@@ -17,6 +17,39 @@
 ;; Task 2: Add actions to add item to cart. See that cart badge is automatically updated.
 ;;
 
+(defn- star [state]
+  [:span {:style {:width "20px"
+                  :height "20px"
+                  :margin "2px"
+                  :border-color "black"
+                  :border-style "solid"
+                  :display "inline-block"}}
+   [:span {:style (cond->
+                    {:width "10px"
+                     :height "20px"
+                     :display "inline-block"}
+
+                    (#{:full :half} state)
+                    (assoc :background-color "yellow"))}]
+   [:span {:style (cond->
+                    {:width "10px"
+                     :height "20px"
+                     :display "inline-block"}
+
+                    (= :full state)
+                    (assoc :background-color "yellow"))}]])
+
+(defn star-rating [rating ratings_count]
+  (print rating)
+  (let [states [:full :full :half nil nil]]
+    [:div {:style {:display "inline-block"}}
+     (doall (map-indexed
+              (fn [i state] ^{:key (str "star_" i)}
+                [star state])
+              states))
+     (when ratings_count
+       (str ratings_count " ratings"))]))
+
 (defn products-list [products]
   (if (= :loading products)
     [ui/refresh-indicator {:status "loading" :size 40 :left 10 :top 10}]
@@ -27,14 +60,16 @@
        [ui/table-header-column "Name"]
        [ui/table-header-column "Description"]
        [ui/table-header-column "Price (€)"]
+       [ui/table-header-column "Rating"]
        [ui/table-header-column "Add to cart"]]]
      [ui/table-body {:display-row-checkbox false}
-      (for [{:keys [id name description price] :as product} products]
+      (for [{:keys [id name description price rating ratings_count] :as product} products]
         ^{:key id}
         [ui/table-row
          [ui/table-row-column name]
          [ui/table-row-column description]
          [ui/table-row-column price]
+         [ui/table-row-column [star-rating rating ratings_count]]
          [ui/table-row-column
           [ui/flat-button {:primary true :on-click #(state/update-state! add-to-cart product)}
            "Add to cart"]]])]]))
@@ -50,13 +85,15 @@
 (defn- add-to-cart [app product]
   (update app :cart conj product))
 
-(defn product-view [{:keys [id name description price] :as product}]
+(defn product-view [{:keys [id name description price rating ratings_count] :as product}]
   (when product
     [ui/card
      {:initially-expanded true}
      [ui/card-header {:title name
                       :subtitle description}]
-     [ui/card-text (str price " €")]]))
+     [ui/card-text (str price " €")]
+     [:div
+      [:ul [star-rating rating ratings_count]]]]))
 
 (defn widgetshop [app]
   [ui/mui-theme-provider
