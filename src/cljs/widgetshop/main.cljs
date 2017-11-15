@@ -6,7 +6,8 @@
             [cljs-react-material-ui.reagent :as ui]
             [cljs-react-material-ui.icons :as ic]
             [widgetshop.app.state :refer [app]]
-            [widgetshop.app.products :as products]))
+            [widgetshop.app.products :as products]
+            [widgetshop.app.state :as state]))
 
 
 
@@ -16,10 +17,83 @@
 ;; Task 2: Add actions to add item to cart. See that cart badge is automatically updated.
 ;;
 
-(defn listaus [e! jutut]
-  [:ul
-   (for [juttu jutut]
-     [:li [:a {:on-click #(e! (->ValitseJuttu juttu))} juttu]])])
+(defn- star [state]
+  [:span {:style {:width "20px"
+                  :height "20px"
+                  :margin "2px"
+                  :border-color "black"
+                  :border-style "solid"
+                  :display "inline-block"}}
+   [:span {:style (cond->
+                    {:width "10px"
+                     :height "20px"
+                     :display "inline-block"}
+
+                    (#{:full :half} state)
+                    (assoc :background-color "yellow"))}]
+   [:span {:style (cond->
+                    {:width "10px"
+                     :height "20px"
+                     :display "inline-block"}
+
+                    (= :full state)
+                    (assoc :background-color "yellow"))}]])
+
+(defn star-rating [rating ratings_count]
+  (print rating)
+  (let [states [:full :full :half nil nil]]
+    [:div {:style {:display "inline-block"}}
+     (doall (map-indexed
+              (fn [i state] ^{:key (str "star_" i)}
+                [star state])
+              states))
+     (when ratings_count
+       (str ratings_count " ratings"))]))
+
+(defn products-list [products]
+  (if (= :loading products)
+    [ui/refresh-indicator {:status "loading" :size 40 :left 10 :top 10}]
+
+    [ui/table {:on-row-selection (partial select-product! products)}
+     [ui/table-header {:display-select-all false :adjust-for-checkbox false}
+      [ui/table-row
+       [ui/table-header-column "Name"]
+       [ui/table-header-column "Description"]
+       [ui/table-header-column "Price (€)"]
+       [ui/table-header-column "Rating"]
+       [ui/table-header-column "Add to cart"]]]
+     [ui/table-body {:display-row-checkbox false}
+      (for [{:keys [id name description price rating ratings_count] :as product} products]
+        ^{:key id}
+        [ui/table-row
+         [ui/table-row-column name]
+         [ui/table-row-column description]
+         [ui/table-row-column price]
+         [ui/table-row-column [star-rating rating ratings_count]]
+         [ui/table-row-column
+          [ui/flat-button {:primary true :on-click #(state/update-state! add-to-cart product)}
+           "Add to cart"]]])]]))
+
+(defn select-product! [products row-index]
+  (if-let [row-index (first (js->clj row-index))]
+    (do (println (str "Selected row " row-index))
+        (state/update-state! select-product (get products row-index)))))
+
+(defn- select-product [app product]
+  (assoc app :selected-product product))
+
+(defn- add-to-cart [app product]
+  (update app :cart conj product))
+
+(defn product-view [{:keys [id name description price rating ratings_count] :as product}]
+  (when product
+    [ui/card
+     {:initially-expanded true}
+     [ui/card-header {:title name
+                      :subtitle description}]
+     [ui/card-text (str price " €")]
+     [:div
+      [:ul [star-rating rating ratings_count]]]]))
 
 (defn widgetshop [app]
   [ui/mui-theme-provider
@@ -46,31 +120,13 @@
 
      ;; Product listing for the selected category
      (let [products ((:products-by-category app) (:category app))]
-       (if (= :loading products)
-         [ui/refresh-indicator {:status "loading" :size 40 :left 10 :top 10}]
-
-         [ui/table
-          [ui/table-header {:display-select-all false :adjust-for-checkbox false}
-           [ui/table-row
-            [ui/table-header-column "Name"]
-            [ui/table-header-column "Description"]
-            [ui/table-header-column "Price (€)"]
-            [ui/table-header-column "Add to cart"]]]
-          [ui/table-body {:display-row-checkbox false}
-           (for [{:keys [id name description price]} ((:products-by-category app) (:category app))]
-             ^{:key id}
-             [ui/table-row
-              [ui/table-row-column name]
-              [ui/table-row-column description]
-              [ui/table-row-column price]
-              [ui/table-row-column
-               [ui/flat-button {:primary true :on-click #(js/alert "add to cart!")}
-                "Add to cart"]]])]]))
+       [products-list products])
 
      [ui/raised-button {:label        "Click me"
                         :icon         (ic/social-group)
-                        :on-click     #(println "clicked")}]]]])
+                        :on-click     #(println "clicked")}]]
 
+    [product-view (:selected-product app)]]])
 
 (defn main-component []
   [widgetshop @app])
