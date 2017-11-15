@@ -21,7 +21,7 @@
   (if (= :loading products)
     [ui/refresh-indicator {:status "loading" :size 40 :left 10 :top 10}]
 
-    [ui/table
+    [ui/table {:on-row-selection (partial select-product! products)}
      [ui/table-header {:display-select-all false :adjust-for-checkbox false}
       [ui/table-row
        [ui/table-header-column "Name"]
@@ -39,8 +39,24 @@
           [ui/flat-button {:primary true :on-click #(state/update-state! add-to-cart product)}
            "Add to cart"]]])]]))
 
+(defn select-product! [products row-index]
+  (if-let [row-index (first (js->clj row-index))]
+    (do (println (str "Selected row " row-index))
+        (state/update-state! select-product (get products row-index)))))
+
+(defn- select-product [app product]
+  (assoc app :selected-product product))
+
 (defn- add-to-cart [app product]
   (update app :cart conj product))
+
+(defn product-view [{:keys [id name description price] :as product}]
+  (when product
+    [ui/card
+     {:initially-expanded true}
+     [ui/card-header {:title name
+                      :subtitle description}]
+     [ui/card-text (str price " €")]]))
 
 (defn widgetshop [app]
   [ui/mui-theme-provider
@@ -71,8 +87,9 @@
 
      [ui/raised-button {:label        "Click me"
                         :icon         (ic/social-group)
-                        :on-click     #(println "clicked")}]]]])
+                        :on-click     #(println "clicked")}]]
 
+    [product-view (:selected-product app)]]])
 
 (defn main-component []
   [widgetshop @app])
