@@ -1,5 +1,5 @@
 (defproject cljs-kurssi "0.1-SNAPSHOT"
-  :dependencies [[org.clojure/clojure "1.9.0-alpha19"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.660"]
 
                  ;; Component library
@@ -44,10 +44,11 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
 
                  ;; figwheel in ide
-                 [figwheel-sidecar "0.5.0"]
+                 ;;[figwheel-sidecar "0.5.15"] ;; for some reason provides spec error... disabled for now
                  ]
 
-  :plugins [[lein-cljsbuild "1.1.5"]]
+  :plugins [[lein-cljsbuild "1.1.5"]
+            [lein-figwheel "0.5.14"]]
 
   ;; Sources for backend: clj and cljc (shared with frontend)
   :source-paths ["src/clj" "src/cljc" "script"]
